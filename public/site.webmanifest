@@ -1,6 +1,6 @@
 {
-  "name": "App",
-  "short_name": "App",
+  "name": "Photo Gallery",
+  "short_name": "Photo Gallery",
   "icons": [
     {
       "src": "/pwa-192x192.png",
@@ -18,13 +18,13 @@
       "src": "/pwa-maskable-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     },
     {
       "src": "/pwa-maskable-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     }
   ],
   "start_url": "/",
