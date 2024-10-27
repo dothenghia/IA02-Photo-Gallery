@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getPhotos } from '../services';
+import { Link } from 'react-router-dom';
 
 interface Photo {
   id: string;
@@ -52,7 +53,7 @@ const List: React.FC = () => {
       <h1 className="text-3xl font-bold my-8">Unsplash Photos</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {photos.map((photo) => (
-          <div key={photo.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <Link to={`/photos/${photo.id}`} key={photo.id} className="bg-white rounded-lg shadow-md overflow-hidden">
             <img
               src={photo.urls.small}
               alt={`Photo by ${photo.user.name}`}
@@ -61,7 +62,7 @@ const List: React.FC = () => {
             <div className="p-4">
               <p className="text-sm text-gray-600">By {photo.user.name}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
       {loading && <p className="text-center my-4">Loading...</p>}

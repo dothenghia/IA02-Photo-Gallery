@@ -18,8 +18,20 @@ export const getPhotos = async (page = 1, perPage = 20) => {
       },
     });
     return response.data;
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error fetching photos:', error);
+    throw error;
+  }
+};
+
+export const getPhotoDetails = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/photos/${id}`);
+    return response.data;
+  }
+  catch (error) {
+    console.error('Error fetching photo details:', error);
     throw error;
   }
 };
