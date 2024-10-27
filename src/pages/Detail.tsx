@@ -24,6 +24,7 @@ const Detail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
+  // Fetch photo details from the API
   useEffect(() => {
     const fetchPhotoDetails = async () => {
       try {
@@ -41,6 +42,7 @@ const Detail: React.FC = () => {
     fetchPhotoDetails();
   }, [id]);
 
+  // Resize the image to fit the screen
   useEffect(() => {
     const handleResize = () => {
       if (imgRef.current && photo) {

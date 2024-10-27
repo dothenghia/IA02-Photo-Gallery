@@ -71,6 +71,7 @@ const List: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
+  // Update masonry columns count based on the window width
   const updateMasonryColumnsCount = useCallback(() => {
     const width = window.innerWidth;
     if (width < 640) {

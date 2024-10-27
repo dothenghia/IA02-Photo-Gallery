@@ -9,6 +9,7 @@ const axiosInstance = axios.create({
   },
 });
 
+// Get photo list
 export const getPhotos = async (page = 1, perPage = 20) => {
   try {
     const response = await axiosInstance.get('/photos', {
@@ -25,6 +26,7 @@ export const getPhotos = async (page = 1, perPage = 20) => {
   }
 };
 
+// Get photo details
 export const getPhotoDetails = async (id: string) => {
   try {
     const response = await axiosInstance.get(`/photos/${id}`);
