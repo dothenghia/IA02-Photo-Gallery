@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getPhotos } from '../services';
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import Masonry from "react-responsive-masonry";
 import PhotoItem from '../components/PhotoItem';
 
 // Just get necessary fields from the API response
@@ -21,6 +21,7 @@ const List: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const initialFetchDone = useRef(false);
   const [gridMode, setGridMode] = useState<'normal' | 'masonry'>('normal');
+  const [masonryColumnsCount, setMasonryColumnsCount] = useState(4);
 
   // Fetch photos from the API
   const fetchPhotos = useCallback(async () => {
@@ -63,12 +64,31 @@ const List: React.FC = () => {
     ) {
       fetchPhotos();
     }
-  }, [fetchPhotos, photos.length, loading, hasMore]);
+  }, [fetchPhotos, photos.length, loading, hasMore, gridMode]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
+
+  const updateMasonryColumnsCount = useCallback(() => {
+    const width = window.innerWidth;
+    if (width < 640) {
+      setMasonryColumnsCount(1);
+    } else if (width < 768) {
+      setMasonryColumnsCount(2);
+    } else if (width < 1024) {
+      setMasonryColumnsCount(3);
+    } else {
+      setMasonryColumnsCount(4);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateMasonryColumnsCount();
+    window.addEventListener('resize', updateMasonryColumnsCount);
+    return () => window.removeEventListener('resize', updateMasonryColumnsCount);
+  }, [updateMasonryColumnsCount]);
 
   return (
     <div className="container mx-auto px-5 pb-10">
@@ -76,13 +96,13 @@ const List: React.FC = () => {
         <h1 className="text-3xl font-bold my-8">Unsplash Photo Gallery</h1>
 
         <div className='flex'>
-          <button 
+          <button
             className={`w-28 px-4 py-2 border-2 border-blue-500 rounded-l-full border-r-0 ${gridMode === 'normal' ? 'bg-blue-500 text-white' : ''}`}
             onClick={() => setGridMode('normal')}
           >
             Normal
           </button>
-          <button 
+          <button
             className={`w-28 px-4 py-2 border-2 border-blue-500 rounded-r-full ${gridMode === 'masonry' ? 'bg-blue-500 text-white' : ''}`}
             onClick={() => setGridMode('masonry')}
           >
@@ -94,7 +114,7 @@ const List: React.FC = () => {
       {gridMode === 'normal' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {photos.map(photo => (
-            <PhotoItem 
+            <PhotoItem
               key={photo.id}
               id={photo.id}
               url={photo.urls.small}
@@ -104,19 +124,17 @@ const List: React.FC = () => {
           ))}
         </div>
       ) : (
-        <ResponsiveMasonry columnsCountBreakPoints={{350: 1, 640: 2, 768: 3, 1024: 4}}>
-          <Masonry gutter="1rem">
-            {photos.map(photo => (
-              <PhotoItem 
-                key={photo.id}
-                id={photo.id}
-                url={photo.urls.small}
-                userName={photo.user.name}
-                mode={gridMode}
-              />
-            ))}
-          </Masonry>
-        </ResponsiveMasonry>
+        <Masonry gutter="1rem" columnsCount={masonryColumnsCount}>
+          {photos.map(photo => (
+            <PhotoItem
+              key={photo.id}
+              id={photo.id}
+              url={photo.urls.small}
+              userName={photo.user.name}
+              mode={gridMode}
+            />
+          ))}
+        </Masonry>
       )}
 
       {loading && <div className="loader mx-auto my-6"></div>}
