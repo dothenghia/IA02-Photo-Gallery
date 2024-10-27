@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { getPhotos } from '../services';
-import { Link } from 'react-router-dom';
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import PhotoItem from '../components/PhotoItem';
 
 // Just get necessary fields from the API response
 interface Photo {
@@ -19,6 +20,7 @@ const List: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const initialFetchDone = useRef(false);
+  const [gridMode, setGridMode] = useState<'normal' | 'masonry'>('normal');
 
   // Fetch photos from the API
   const fetchPhotos = useCallback(async () => {
@@ -54,7 +56,7 @@ const List: React.FC = () => {
   const handleScroll = useCallback(() => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 100 &&
+      document.documentElement.offsetHeight - (gridMode === 'normal' ? 100 : 500) &&
       photos.length > 0 &&
       !loading &&
       hasMore
@@ -69,23 +71,53 @@ const List: React.FC = () => {
   }, [handleScroll]);
 
   return (
-    <div className="flex-1 container mx-auto px-5 pb-10">
-      <h1 className="text-3xl font-bold my-8">Unsplash Photo Gallery</h1>
+    <div className="container mx-auto px-5 pb-10">
+      <div className='flex justify-between items-baseline'>
+        <h1 className="text-3xl font-bold my-8">Unsplash Photo Gallery</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {photos.map((photo) => (
-          <Link to={`/photos/${photo.id}`} key={photo.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <img
-              src={photo.urls.small}
-              alt={`Photo by ${photo.user.name}`}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <p className="text-sm text-gray-600">By {photo.user.name}</p>
-            </div>
-          </Link>
-        ))}
+        <div className='flex'>
+          <button 
+            className={`w-28 px-4 py-2 border-2 border-blue-500 rounded-l-full border-r-0 ${gridMode === 'normal' ? 'bg-blue-500 text-white' : ''}`}
+            onClick={() => setGridMode('normal')}
+          >
+            Normal
+          </button>
+          <button 
+            className={`w-28 px-4 py-2 border-2 border-blue-500 rounded-r-full ${gridMode === 'masonry' ? 'bg-blue-500 text-white' : ''}`}
+            onClick={() => setGridMode('masonry')}
+          >
+            Masonry
+          </button>
+        </div>
       </div>
+
+      {gridMode === 'normal' ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {photos.map(photo => (
+            <PhotoItem 
+              key={photo.id}
+              id={photo.id}
+              url={photo.urls.small}
+              userName={photo.user.name}
+              mode={gridMode}
+            />
+          ))}
+        </div>
+      ) : (
+        <ResponsiveMasonry columnsCountBreakPoints={{350: 1, 640: 2, 768: 3, 1024: 4}}>
+          <Masonry gutter="1rem">
+            {photos.map(photo => (
+              <PhotoItem 
+                key={photo.id}
+                id={photo.id}
+                url={photo.urls.small}
+                userName={photo.user.name}
+                mode={gridMode}
+              />
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
+      )}
 
       {loading && <div className="loader mx-auto my-6"></div>}
       {!hasMore && <p className="text-center my-6">No more photos to load</p>}

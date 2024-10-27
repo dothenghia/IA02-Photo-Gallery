@@ -48,7 +48,6 @@ const Detail: React.FC = () => {
         const maxHeight = window.innerHeight * 0.7; // 70% of window height
 
         const aspectRatio = photo.width / photo.height;
-        console.log('aspectRatio', aspectRatio, photo.width, photo.height);
         let width = maxWidth;
         let height = width / aspectRatio;
 
